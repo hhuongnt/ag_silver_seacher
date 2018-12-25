@@ -1,0 +1,5 @@
+import sys
+    list = []
+    list = sys.argv
+    return list
+print(list())
