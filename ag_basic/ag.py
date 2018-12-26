@@ -1,12 +1,5 @@
 import sys
-
-
-def readfile(file):
-    f = open(file, 'r')
-    return f.read()
-
-
-"""Read file"""
+import re
 
 
 def list_lines(file):
@@ -20,18 +13,36 @@ def list_lines(file):
 """Return list of lines in file"""
 
 
-def find_character(file, char, lines):
-    words_have_char = []
-    for i in lines:
-        list_char = []
-        list_char = i.split(' ')
-        for j in list_char:
-            if j.find(char) != -1:
-                words_have_char.append(j)
-    return words_have_char
+def print_character(char, lower_lines, lines, case):
+    for i in range(len(lower_lines)):
+        if lower_lines[i].find(char) != -1:
+            print('\033[1;33m' + str(i+1) + '\033[0m'  + ':', end='')
+            print(color(char, lower_lines[i], lines[i], case))
 
 
-"""Return list of the words have character in file"""
+"""Print the colored strings have character in file"""
+
+
+def color(char, lower_line, line, case):
+    final_string = ''
+    start = '\033[30;43m'
+    end = '\033[0m'
+    if case == 'insensitive':
+        while char in lower_line:
+            length = lower_line.index(char[0]) + len(char)
+            final_string += line[:lower_line.index(char[0]):]
+            final_string += start + line[lower_line.index(char[0]):length:] + end
+            line = line[length::]
+            lower_line = lower_line[length::]
+            color(char, lower_line, line, case)
+        final_string += line
+    else:
+        colored = start + char + end
+        final_string = re.sub(char, colored, line, 0, 0)
+    return final_string
+
+
+"""Return insensitive colored string"""
 
 
 def ag():
@@ -49,10 +60,11 @@ def ag():
         lower_lines = []
         for i in lines:
             lower_lines.append(i.lower())
-        words_have_char = find_character(file, char, lower_lines)
-        print (words_have_char)
+        char = char.lower()
+        print_character(char, lower_lines, lines, case)
         quit()
-    words_have_char = find_character(file, char, lines)
-    print (words_have_char)
+    lower_lines = lines
+    print_character(char, lower_lines, lines, case)
+
 
 ag()
